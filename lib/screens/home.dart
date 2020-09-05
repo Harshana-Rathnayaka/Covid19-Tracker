@@ -20,7 +20,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var numberFormat = NumberFormat('###,###');
 
   Future _getGlobalStats(endpoint) async {
-    print('sending api request to get data');
+    print('sending api request to get data'); 
     setState(() {
       isLoading = true;
     });
