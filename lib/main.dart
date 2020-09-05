@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Montserrat',
         primarySwatch: Colors.purple,
+        canvasColor: Colors.purpleAccent[200],
       ),
     );
   }

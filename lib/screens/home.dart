@@ -18,13 +18,14 @@ class _MyHomePageState extends State<MyHomePage> {
   var data;
   var lastUpdated;
   var numberFormat = NumberFormat('###,###');
+  var dropDownValue = 'Today';
 
   Future _getGlobalStats(endpoint) async {
-    print('sending api request to get data'); 
+    print('sending api request to get data');
     setState(() {
       isLoading = true;
     });
-    final http.Response response = await Network().getData('/all');
+    final http.Response response = await Network().getData(endpoint);
 
     if (response != null && response.statusCode == 200) {
       print('===================');
@@ -32,7 +33,6 @@ class _MyHomePageState extends State<MyHomePage> {
       data = jsonDecode(response.body);
       print('===================');
       print(data);
-      print("cases: ${data['cases']}");
       setState(() {
         isLoading = false;
         lastUpdated = DateFormat('dd-MM-yyyy  kk:mm').format(DateTime.now());
@@ -53,7 +53,6 @@ class _MyHomePageState extends State<MyHomePage> {
       initialIndex: 0,
       child: Scaffold(
         backgroundColor: Colors.deepPurple[600],
-        // resizeToAvoidBottomInset: true,
         appBar: AppBar(
           actions: [
             IconButton(
@@ -89,7 +88,16 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            _getGlobalStats('/all');
+            if (dropDownValue == 'Today') {
+              print('getting today data');
+              _getGlobalStats('/all');
+            } else if (dropDownValue == 'Yesterday') {
+              print('getting yesterday\'s data');
+              _getGlobalStats('/all?yesterday=true');
+            } else if (dropDownValue == 'Two Days Ago') {
+              print('getting two days ago data');
+              _getGlobalStats('/all?twoDaysAgo=true');
+            }
           },
           backgroundColor: Colors.green,
           tooltip: 'Reload',
@@ -121,538 +129,557 @@ class _MyHomePageState extends State<MyHomePage> {
                                       color: Colors.grey[500],
                                     ),
                                   ),
-                                  Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Card(
-                                              elevation: 10.0,
-                                              shadowColor: Colors.grey.shade600,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              color: Colors.white,
-                                              borderOnForeground: true,
-                                              child: Container(
-                                                height: 80.0,
-                                                width: 90,
-                                                child: Column(
+                                  DropdownButton<String>(
+                                    value: dropDownValue,
+                                    icon: Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.purpleAccent,
+                                    ),
+                                    iconSize: 28,
+                                    elevation: 16,
+                                    underline: Container(
+                                      height: 2.0,
+                                      color: Colors.purpleAccent,
+                                    ),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        dropDownValue = value;
+                                        if (dropDownValue == 'Today') {
+                                          print('getting today data');
+                                          _getGlobalStats('/all');
+                                        } else if (dropDownValue ==
+                                            'Yesterday') {
+                                          print('getting yesterday\'s data');
+                                          _getGlobalStats(
+                                              '/all?yesterday=true');
+                                        } else if (dropDownValue ==
+                                            'Two Days Ago') {
+                                          print('getting two days ago data');
+                                          _getGlobalStats(
+                                              '/all?twoDaysAgo=true');
+                                        }
+                                      });
+                                    },
+                                    items: [
+                                      'Today',
+                                      'Yesterday',
+                                      'Two Days Ago',
+                                    ]
+                                        .map<DropdownMenuItem<String>>(
+                                          (value) => DropdownMenuItem<String>(
+                                            child: Text(value),
+                                            value: value,
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.white,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 90,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Infected',
-                                                          style: TextStyle(
-                                                            fontSize: 15.0,
-                                                            color: Colors.blue,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      height: 5.0,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          numberFormat
-                                                              .format(
-                                                                  data['cases'])
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          FontAwesome
-                                                              .long_arrow_up,
-                                                          color:
-                                                              Colors.blueAccent,
-                                                          size: 10,
-                                                        ),
-                                                        Text(
-                                                          numberFormat
-                                                              .format(data[
-                                                                  'todayCases'])
-                                                              .toString(),
-                                                          style: TextStyle(),
-                                                        ),
-                                                      ],
+                                                    Text(
+                                                      'Infected',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.blue,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            ),
-                                            Card(
-                                              elevation: 10.0,
-                                              shadowColor: Colors.grey.shade600,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              color: Colors.white,
-                                              borderOnForeground: true,
-                                              child: Container(
-                                                height: 80.0,
-                                                width: 90,
-                                                child: Column(
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Deaths',
-                                                          style: TextStyle(
-                                                            fontSize: 15.0,
-                                                            color: Colors.red,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      height: 5.0,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          numberFormat
-                                                              .format(data[
-                                                                  'deaths'])
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          FontAwesome
-                                                              .long_arrow_up,
-                                                          color:
-                                                              Colors.redAccent,
-                                                          size: 10,
-                                                        ),
-                                                        Text(numberFormat
-                                                            .format(data[
-                                                                'todayDeaths'])
-                                                            .toString()),
-                                                      ],
+                                                    Text(
+                                                      numberFormat
+                                                          .format(data['cases'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            ),
-                                            Card(
-                                              elevation: 10.0,
-                                              shadowColor: Colors.grey.shade600,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              color: Colors.white,
-                                              borderOnForeground: true,
-                                              child: Container(
-                                                height: 80.0,
-                                                width: 90,
-                                                child: Column(
+                                                Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Recovered',
-                                                          style: TextStyle(
-                                                            fontSize: 15.0,
-                                                            color: Colors.green,
-                                                          ),
-                                                        ),
-                                                      ],
+                                                    Icon(
+                                                      FontAwesome.long_arrow_up,
+                                                      color: Colors.blueAccent,
+                                                      size: 10,
                                                     ),
-                                                    SizedBox(
-                                                      height: 5.0,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          numberFormat
-                                                              .format(data[
-                                                                  'recovered'])
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(
-                                                          FontAwesome
-                                                              .long_arrow_up,
-                                                          color: Colors
-                                                              .greenAccent[700],
-                                                          size: 10,
-                                                        ),
-                                                        Text(numberFormat
-                                                            .format(data[
-                                                                'todayRecovered'])
-                                                            .toString()),
-                                                      ],
+                                                    Text(
+                                                      numberFormat
+                                                          .format(data[
+                                                              'todayCases'])
+                                                          .toString(),
+                                                      style: TextStyle(),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Card(
-                                              elevation: 10.0,
-                                              shadowColor: Colors.grey.shade600,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              color: Colors.green[400],
-                                              borderOnForeground: true,
-                                              child: Container(
-                                                height: 80.0,
-                                                width: 120,
-                                                child: Column(
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.white,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 90,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Active',
-                                                          style: TextStyle(
-                                                            fontSize: 15.0,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      height: 5.0,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          numberFormat
-                                                              .format(data[
-                                                                  'active'])
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
+                                                    Text(
+                                                      'Deaths',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.red,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            ),
-                                            Card(
-                                              elevation: 10.0,
-                                              shadowColor: Colors.grey.shade600,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              color: Colors.redAccent[100],
-                                              borderOnForeground: true,
-                                              child: Container(
-                                                height: 80.0,
-                                                width: 120,
-                                                child: Column(
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Critical',
-                                                          style: TextStyle(
-                                                            fontSize: 15.0,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      height: 5.0,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          numberFormat
-                                                              .format(data[
-                                                                  'critical'])
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
+                                                    Text(
+                                                      numberFormat
+                                                          .format(
+                                                              data['deaths'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      FontAwesome.long_arrow_up,
+                                                      color: Colors.redAccent,
+                                                      size: 10,
+                                                    ),
+                                                    Text(numberFormat
+                                                        .format(
+                                                            data['todayDeaths'])
+                                                        .toString()),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Card(
-                                              elevation: 10.0,
-                                              shadowColor: Colors.grey.shade600,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              color: Colors.blueGrey,
-                                              borderOnForeground: true,
-                                              child: Container(
-                                                height: 80.0,
-                                                width: 95,
-                                                child: Column(
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.white,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 90,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Population',
-                                                          style: TextStyle(
-                                                            fontSize: 15.0,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      height: 5.0,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          numberFormat
-                                                              .format(data[
-                                                                  'population'])
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
+                                                    Text(
+                                                      'Recovered',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.green,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            ),
-                                            Card(
-                                              elevation: 10.0,
-                                              shadowColor: Colors.grey.shade600,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              color: Colors.blueGrey,
-                                              borderOnForeground: true,
-                                              child: Container(
-                                                height: 80.0,
-                                                width: 90,
-                                                child: Column(
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Countries',
-                                                          style: TextStyle(
-                                                            fontSize: 15.0,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      height: 5.0,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          numberFormat
-                                                              .format(data[
-                                                                  'affectedCountries'])
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
+                                                    Text(
+                                                      numberFormat
+                                                          .format(
+                                                              data['recovered'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            ),
-                                            Card(
-                                              elevation: 10.0,
-                                              shadowColor: Colors.grey.shade600,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                              color: Colors.blueGrey,
-                                              borderOnForeground: true,
-                                              child: Container(
-                                                height: 80.0,
-                                                width: 95,
-                                                child: Column(
+                                                Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Tests',
-                                                          style: TextStyle(
-                                                            fontSize: 15.0,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
+                                                    Icon(
+                                                      FontAwesome.long_arrow_up,
+                                                      color: Colors
+                                                          .greenAccent[700],
+                                                      size: 10,
                                                     ),
-                                                    SizedBox(
-                                                      height: 5.0,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          numberFormat
-                                                              .format(
-                                                                  data['tests'])
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                    Text(numberFormat
+                                                        .format(data[
+                                                            'todayRecovered'])
+                                                        .toString()),
                                                   ],
                                                 ),
-                                              ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.green[400],
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 120,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Active',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(
+                                                              data['active'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.redAccent[100],
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 120,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Critical',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(
+                                                              data['critical'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.blueGrey,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 95,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Population',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(data[
+                                                              'population'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.blueGrey,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 90,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Countries',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(data[
+                                                              'affectedCountries'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.blueGrey,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 95,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Tests',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(data['tests'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   SizedBox(
                                     height: 5.0,
@@ -666,10 +693,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                     height: 5.0,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(left:20.0, right: 20.0),
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, right: 20.0),
                                     child: Container(
-                                      height: MediaQuery.of(context).size.height *
-                                          0.31,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.31,
                                       decoration: BoxDecoration(
                                         color: Colors.white70,
                                         borderRadius: BorderRadius.only(
