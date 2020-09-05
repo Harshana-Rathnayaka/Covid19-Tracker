@@ -105,12 +105,20 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: isLoading
             ? Center(
-                child: RefreshProgressIndicator(),
+                child: Theme(
+                    data: Theme.of(context).copyWith(
+                      canvasColor: Colors.white70,
+                    ),
+                    child: RefreshProgressIndicator()),
               )
             : TabBarView(children: [
                 Tab(
                   child: isLoading
-                      ? RefreshProgressIndicator()
+                      ? Theme(
+                          data: Theme.of(context).copyWith(
+                            canvasColor: Colors.white70,
+                          ),
+                          child: RefreshProgressIndicator())
                       : Container(
                           height: MediaQuery.of(context).size.height,
                           child: Padding(
@@ -698,7 +706,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: Container(
                                       height:
                                           MediaQuery.of(context).size.height *
-                                              0.31,
+                                              0.26,
                                       decoration: BoxDecoration(
                                         color: Colors.white70,
                                         borderRadius: BorderRadius.only(
