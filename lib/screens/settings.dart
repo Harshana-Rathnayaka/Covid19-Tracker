@@ -1,5 +1,8 @@
 import 'package:country_list_pick/country_list_pick.dart';
+import 'package:covid19_tracker/services/country.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -8,6 +11,9 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   var selectedCountry;
+  bool isLoading = false;
+  var countryDialCode = '+94';
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -26,55 +32,84 @@ class _SettingsState extends State<Settings> {
             ),
           ),
         ),
-        body: Container(
-          height: 300,
-          width: MediaQuery.of(context).size.width,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Select Your Country',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+        body: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Container(
+                height: 300,
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Select Your Country',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Consumer<CountryNotifier>(
+                        builder: (context, notifier, child) => CountryListPick(
+                          isDownIcon: true,
+                          isShowFlag: true,
+                          showEnglishName: true,
+                          isShowTitle: true,
+                          initialSelection: notifier.countryDialCode,
+                          onChanged: (CountryCode code) {
+                            print(code.dialCode);
+                            setState(() {
+                              selectedCountry = code.name;
+                              countryDialCode = code.dialCode;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      Consumer<CountryNotifier>(
+                        builder: (context, notifier, child) => MaterialButton(
+                          onPressed: () {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            Future.delayed(Duration(seconds: 1), () {
+                              final countrySaved = notifier.saveCountry(
+                                  selectedCountry, countryDialCode);
+                              if (countrySaved) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                Fluttertoast.showToast(
+                                    backgroundColor: Colors.green,
+                                    msg:
+                                        '$selectedCountry was saved as your country');
+                              } else {
+                                Fluttertoast.showToast(
+                                    backgroundColor: Colors.redAccent,
+                                    msg: 'something went wrong');
+                                print('something went wrong');
+                              }
+                            });
+                          },
+                          height: 40.0,
+                          color: Colors.purpleAccent,
+                          elevation: 10.0,
+                          textColor: Colors.white,
+                          minWidth: 150.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Save',
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                CountryListPick(
-                  isDownIcon: true,
-                  isShowFlag: true,
-                  showEnglishName: true,
-                  isShowTitle: true,
-                  initialSelection: '+94',
-                  onChanged: (CountryCode code) {
-                    setState(() {
-                      selectedCountry = code.name;
-                    });
-                    print(selectedCountry);
-                  },
-                ),
-                SizedBox(height: 20.0),
-                MaterialButton(
-                  onPressed: () {},
-                  height: 40.0,
-                  color: Colors.purpleAccent,
-                  elevation: 10.0,
-                  textColor: Colors.white,
-                  minWidth: 150.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Save',
-                    style: TextStyle(fontSize: 18.0),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
