@@ -14,27 +14,51 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool firstTime = true;
-  bool isLoading = false;
-  var data;
+  bool isLoadingGlobalData = false;
+  bool isLoadingCountryData = false;
+  var globalData;
+  var countryData;
   var lastUpdated;
   var numberFormat = NumberFormat('###,###');
   var dropDownValue = 'Today';
+  bool hideIcon = false;
+
+  Future _getSpecificCountryStats(endpoint) async {
+    print('sending api request to get data');
+    setState(() {
+      isLoadingCountryData = true;
+    });
+
+    final http.Response response = await Network().getData(endpoint);
+
+    if (response != null && response.statusCode == 200) {
+      print('===================');
+      print(jsonDecode(response.body));
+      countryData = jsonDecode(response.body);
+      print('===================');
+      print(countryData);
+      setState(() {
+        isLoadingCountryData = false;
+        lastUpdated = DateFormat('dd-MM-yyyy  kk:mm').format(DateTime.now());
+      });
+    }
+  }
 
   Future _getGlobalStats(endpoint) async {
     print('sending api request to get data');
     setState(() {
-      isLoading = true;
+      isLoadingGlobalData = true;
     });
     final http.Response response = await Network().getData(endpoint);
 
     if (response != null && response.statusCode == 200) {
       print('===================');
       print(jsonDecode(response.body));
-      data = jsonDecode(response.body);
+      globalData = jsonDecode(response.body);
       print('===================');
-      print(data);
+      print(globalData);
       setState(() {
-        isLoading = false;
+        isLoadingGlobalData = false;
         lastUpdated = DateFormat('dd-MM-yyyy  kk:mm').format(DateTime.now());
       });
     }
@@ -42,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    _getSpecificCountryStats('/countries/Sri%20Lanka?strict=false');
     _getGlobalStats('/all');
     super.initState();
   }
@@ -89,13 +114,13 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             if (dropDownValue == 'Today') {
-              print('getting today data');
+              print('getting today globalData');
               _getGlobalStats('/all');
             } else if (dropDownValue == 'Yesterday') {
-              print('getting yesterday\'s data');
+              print('getting yesterday\'s globalData');
               _getGlobalStats('/all?yesterday=true');
             } else if (dropDownValue == 'Two Days Ago') {
-              print('getting two days ago data');
+              print('getting two days ago globalData');
               _getGlobalStats('/all?twoDaysAgo=true');
             }
           },
@@ -103,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
           tooltip: 'Reload',
           child: Icon(Icons.refresh),
         ),
-        body: isLoading
+        body: isLoadingGlobalData
             ? Center(
                 child: Theme(
                     data: Theme.of(context).copyWith(
@@ -113,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             : TabBarView(children: [
                 Tab(
-                  child: isLoading
+                  child: isLoadingGlobalData
                       ? Theme(
                           data: Theme.of(context).copyWith(
                             canvasColor: Colors.white70,
@@ -158,16 +183,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                       setState(() {
                                         dropDownValue = value;
                                         if (dropDownValue == 'Today') {
-                                          print('getting today data');
+                                          print('getting today globalData');
                                           _getGlobalStats('/all');
                                         } else if (dropDownValue ==
                                             'Yesterday') {
-                                          print('getting yesterday\'s data');
+                                          print(
+                                              'getting yesterday\'s globalData');
                                           _getGlobalStats(
                                               '/all?yesterday=true');
                                         } else if (dropDownValue ==
                                             'Two Days Ago') {
-                                          print('getting two days ago data');
+                                          print(
+                                              'getting two days ago globalData');
                                           _getGlobalStats(
                                               '/all?twoDaysAgo=true');
                                         }
@@ -230,7 +257,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   children: [
                                                     Text(
                                                       numberFormat
-                                                          .format(data['cases'])
+                                                          .format(globalData[
+                                                              'cases'])
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
@@ -251,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     ),
                                                     Text(
                                                       numberFormat
-                                                          .format(data[
+                                                          .format(globalData[
                                                               'todayCases'])
                                                           .toString(),
                                                       style: TextStyle(),
@@ -300,8 +328,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   children: [
                                                     Text(
                                                       numberFormat
-                                                          .format(
-                                                              data['deaths'])
+                                                          .format(globalData[
+                                                              'deaths'])
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
@@ -321,8 +349,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       size: 10,
                                                     ),
                                                     Text(numberFormat
-                                                        .format(
-                                                            data['todayDeaths'])
+                                                        .format(globalData[
+                                                            'todayDeaths'])
                                                         .toString()),
                                                   ],
                                                 ),
@@ -368,8 +396,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   children: [
                                                     Text(
                                                       numberFormat
-                                                          .format(
-                                                              data['recovered'])
+                                                          .format(globalData[
+                                                              'recovered'])
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
@@ -390,7 +418,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       size: 10,
                                                     ),
                                                     Text(numberFormat
-                                                        .format(data[
+                                                        .format(globalData[
                                                             'todayRecovered'])
                                                         .toString()),
                                                   ],
@@ -446,13 +474,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   children: [
                                                     Text(
                                                       numberFormat
-                                                          .format(
-                                                              data['active'])
+                                                          .format(globalData[
+                                                              'active'])
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:
-                                                            FontWeight.bold,
+                                                            FontWeight.w800,
                                                         color: Colors.white,
                                                       ),
                                                     ),
@@ -500,13 +528,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   children: [
                                                     Text(
                                                       numberFormat
-                                                          .format(
-                                                              data['critical'])
+                                                          .format(globalData[
+                                                              'critical'])
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight:
-                                                            FontWeight.bold,
+                                                            FontWeight.w800,
                                                         color: Colors.white,
                                                       ),
                                                     ),
@@ -550,6 +578,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       style: TextStyle(
                                                         fontSize: 15.0,
                                                         color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w800,
                                                       ),
                                                     ),
                                                   ],
@@ -563,13 +593,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   children: [
                                                     Text(
                                                       numberFormat
-                                                          .format(data[
+                                                          .format(globalData[
                                                               'population'])
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold,
                                                         color: Colors.white,
                                                       ),
                                                     ),
@@ -604,6 +632,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       style: TextStyle(
                                                         fontSize: 15.0,
                                                         color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w800,
                                                       ),
                                                     ),
                                                   ],
@@ -617,13 +647,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   children: [
                                                     Text(
                                                       numberFormat
-                                                          .format(data[
+                                                          .format(globalData[
                                                               'affectedCountries'])
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold,
                                                         color: Colors.white,
                                                       ),
                                                     ),
@@ -658,6 +686,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       style: TextStyle(
                                                         fontSize: 15.0,
                                                         color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w800,
                                                       ),
                                                     ),
                                                   ],
@@ -671,12 +701,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   children: [
                                                     Text(
                                                       numberFormat
-                                                          .format(data['tests'])
+                                                          .format(globalData[
+                                                              'tests'])
                                                           .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold,
                                                         color: Colors.white,
                                                       ),
                                                     ),
@@ -729,7 +758,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "Cases Per One Million",
                                               ),
                                               Text(
-                                                ": ${data['casesPerOneMillion'].toString()}",
+                                                ": ${globalData['casesPerOneMillion'].toString()}",
                                               ),
                                             ]),
                                             TableRow(children: [
@@ -737,7 +766,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "Deaths Per One Million",
                                               ),
                                               Text(
-                                                ": ${data['deathsPerOneMillion'].toString()}",
+                                                ": ${globalData['deathsPerOneMillion'].toString()}",
                                               ),
                                             ]),
                                             TableRow(children: [
@@ -745,7 +774,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "Tests Per One Million",
                                               ),
                                               Text(
-                                                ": ${data['testsPerOneMillion'].toString()}",
+                                                ": ${globalData['testsPerOneMillion'].toString()}",
                                               ),
                                             ]),
                                             TableRow(children: [
@@ -753,7 +782,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "One Case Per People",
                                               ),
                                               Text(
-                                                ": ${data['oneCasePerPeople'].toString()}",
+                                                ": ${globalData['oneCasePerPeople'].toString()}",
                                               ),
                                             ]),
                                             TableRow(children: [
@@ -761,7 +790,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "One Death Per People",
                                               ),
                                               Text(
-                                                ": ${data['oneDeathPerPeople'].toString()}",
+                                                ": ${globalData['oneDeathPerPeople'].toString()}",
                                               ),
                                             ]),
                                             TableRow(children: [
@@ -769,7 +798,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "One Test Per People",
                                               ),
                                               Text(
-                                                ": ${data['oneTestPerPeople'].toString()}",
+                                                ": ${globalData['oneTestPerPeople'].toString()}",
                                               ),
                                             ]),
                                             TableRow(children: [
@@ -777,7 +806,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "Active Per One Million",
                                               ),
                                               Text(
-                                                ": ${data['activePerOneMillion'].toString()}",
+                                                ": ${globalData['activePerOneMillion'].toString()}",
                                               ),
                                             ]),
                                             TableRow(children: [
@@ -785,7 +814,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "Recovered Per One Million",
                                               ),
                                               Text(
-                                                ": ${data['recoveredPerOneMillion'].toString()}",
+                                                ": ${globalData['recoveredPerOneMillion'].toString()}",
                                               ),
                                             ]),
                                             TableRow(children: [
@@ -793,7 +822,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 "Critical Per One Million",
                                               ),
                                               Text(
-                                                ": ${data['criticalPerOneMillion'].toString()}",
+                                                ": ${globalData['criticalPerOneMillion'].toString()}",
                                               ),
                                             ]),
                                           ],
@@ -808,8 +837,695 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                 ),
                 Tab(
-                  child: Text("Country"),
-                )
+                  child: isLoadingCountryData
+                      ? Theme(
+                          data: Theme.of(context).copyWith(
+                            canvasColor: Colors.white70,
+                          ),
+                          child: RefreshProgressIndicator())
+                      : Container(
+                          height: MediaQuery.of(context).size.height,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              0.0,
+                              10.0,
+                              0.0,
+                              0.0,
+                            ),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Last Updated: ${lastUpdated.toString()}",
+                                    style: TextStyle(
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  DropdownButton<String>(
+                                    value: dropDownValue,
+                                    icon: Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.purpleAccent,
+                                    ),
+                                    iconSize: 28,
+                                    elevation: 16,
+                                    underline: Container(
+                                      height: 2.0,
+                                      color: Colors.purpleAccent,
+                                    ),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        dropDownValue = value;
+                                        if (dropDownValue == 'Today') {
+                                          print('getting today data');
+                                          _getSpecificCountryStats(
+                                              '/countries/Sri%20Lanka?strict=false');
+                                        } else if (dropDownValue ==
+                                            'Yesterday') {
+                                          print('getting yesterday\'s data');
+                                          _getSpecificCountryStats(
+                                              '/countries/Sri%20Lanka?yesterday=true&strict=false');
+                                        }
+                                      });
+                                    },
+                                    items: [
+                                      'Today',
+                                      'Yesterday',
+                                    ]
+                                        .map<DropdownMenuItem<String>>(
+                                          (value) => DropdownMenuItem<String>(
+                                            child: Text(value),
+                                            value: value,
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.white,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 90,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Infected',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.blue,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(countryData[
+                                                              'cases'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      FontAwesome.long_arrow_up,
+                                                      color: Colors.blueAccent,
+                                                      size: 10,
+                                                    ),
+                                                    Text(
+                                                      numberFormat
+                                                          .format(countryData[
+                                                              'todayCases'])
+                                                          .toString(),
+                                                      style: TextStyle(),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.white,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 90,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Deaths',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.red,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(countryData[
+                                                              'deaths'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      FontAwesome.long_arrow_up,
+                                                      color: Colors.redAccent,
+                                                      size: 10,
+                                                    ),
+                                                    Text(numberFormat
+                                                        .format(countryData[
+                                                            'todayDeaths'])
+                                                        .toString()),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.white,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 90,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Recovered',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.green,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(countryData[
+                                                              'recovered'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      FontAwesome.long_arrow_up,
+                                                      color: Colors
+                                                          .greenAccent[700],
+                                                      size: 10,
+                                                    ),
+                                                    Text(numberFormat
+                                                        .format(countryData[
+                                                            'todayRecovered'])
+                                                        .toString()),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.green[400],
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 120,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Active',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(countryData[
+                                                              'active'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.redAccent[100],
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 120,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Critical',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(countryData[
+                                                              'critical'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.blueGrey,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 95,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Population',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(countryData[
+                                                              'population'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.blueGrey,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 90,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Continent',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      countryData['continent']
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Card(
+                                          elevation: 10.0,
+                                          shadowColor: Colors.grey.shade600,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          color: Colors.blueGrey,
+                                          borderOnForeground: true,
+                                          child: Container(
+                                            height: 80.0,
+                                            width: 95,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      'Tests',
+                                                      style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w800,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      numberFormat
+                                                          .format(countryData[
+                                                              'tests'])
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  Divider(
+                                    color: Colors.white,
+                                    indent: 40,
+                                    endIndent: 40,
+                                  ),
+                                  SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, right: 20.0),
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.26,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white70,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(40.0),
+                                          topRight: Radius.circular(40.0),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: Table(
+                                          defaultVerticalAlignment:
+                                              TableCellVerticalAlignment.middle,
+                                          columnWidths: {
+                                            0: FractionColumnWidth(0.7),
+                                            1: FractionColumnWidth(0.3),
+                                          },
+                                          children: [
+                                            TableRow(children: [
+                                              Text(
+                                                "Cases Per One Million",
+                                              ),
+                                              Text(
+                                                ": ${countryData['casesPerOneMillion'].toString()}",
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              Text(
+                                                "Deaths Per One Million",
+                                              ),
+                                              Text(
+                                                ": ${countryData['deathsPerOneMillion'].toString()}",
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              Text(
+                                                "Tests Per One Million",
+                                              ),
+                                              Text(
+                                                ": ${countryData['testsPerOneMillion'].toString()}",
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              Text(
+                                                "One Case Per People",
+                                              ),
+                                              Text(
+                                                ": ${countryData['oneCasePerPeople'].toString()}",
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              Text(
+                                                "One Death Per People",
+                                              ),
+                                              Text(
+                                                ": ${countryData['oneDeathPerPeople'].toString()}",
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              Text(
+                                                "One Test Per People",
+                                              ),
+                                              Text(
+                                                ": ${countryData['oneTestPerPeople'].toString()}",
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              Text(
+                                                "Active Per One Million",
+                                              ),
+                                              Text(
+                                                ": ${countryData['activePerOneMillion'].toString()}",
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              Text(
+                                                "Recovered Per One Million",
+                                              ),
+                                              Text(
+                                                ": ${countryData['recoveredPerOneMillion'].toString()}",
+                                              ),
+                                            ]),
+                                            TableRow(children: [
+                                              Text(
+                                                "Critical Per One Million",
+                                              ),
+                                              Text(
+                                                ": ${countryData['criticalPerOneMillion'].toString()}",
+                                              ),
+                                            ]),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
               ]),
       ),
     );
