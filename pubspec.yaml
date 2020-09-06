@@ -30,7 +30,8 @@ dependencies:
   http: ^0.12.2
   flutter_icons: ^1.1.0
   intl: ^0.16.1
-  google_fonts: ^1.1.0
+  country_list_pick: ^1.0.0+5
+  connectivity: ^0.4.9+2
 
 dev_dependencies:
   flutter_test:
@@ -63,9 +64,9 @@ flutter:
       fonts:
         # - asset: assets/fonts/Montserrat-Regular.ttf
         - asset: assets/fonts/Montserrat-SemiBold.ttf
-        # - asset: assets/fonts/Montserrat-Medium.ttf
-        # - asset: assets/fonts/Montserrat-Bold.ttf
-        # - asset: assets/fonts/Montserrat-Black.ttf
+          # - asset: assets/fonts/Montserrat-Medium.ttf
+          # - asset: assets/fonts/Montserrat-Bold.ttf
+          # - asset: assets/fonts/Montserrat-Black.ttf
           # weight: 500
   #         style: italic
   #   - family: Trajan Pro
