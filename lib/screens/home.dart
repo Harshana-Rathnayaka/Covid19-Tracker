@@ -5,6 +5,7 @@ import 'package:covid19_tracker/services/country.dart';
 import 'package:covid19_tracker/services/network_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -129,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       initialIndex: 0,
       child: Builder(
         builder: (context) {
@@ -154,6 +155,37 @@ class _MyHomePageState extends State<MyHomePage> {
                     FontAwesome.flag,
                   ),
                   text: 'My Country',
+                ),
+                Tab(
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: SvgPicture.asset(
+                                    'assets/icons/united-states.svg'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 0.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text('USA'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // text: '',
                 ),
               ]),
               backgroundColor: Colors.deepPurple,
@@ -1884,6 +1916,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                             ),
+                    ),
+                    Tab(
+                      child: Container(),
                     ),
                   ]),
           );
