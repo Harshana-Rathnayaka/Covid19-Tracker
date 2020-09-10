@@ -1,4 +1,4 @@
-# 🔥🔥 Flutter Covid-19 Tracker [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![PRs Welcome](https://img.shields.io/badge/Facebook-follow-blue)](http://https://www.facebook.com/DiloHashRoX/)
+# 🔥🔥 Flutter Covid-19 Tracker [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) [![PRs Welcome](https://img.shields.io/badge/Facebook-follow-blue?style=flat-square)](http://https://www.facebook.com/DiloHashRoX/)
 
 A new Flutter project.
 
