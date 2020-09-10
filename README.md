@@ -2,16 +2,16 @@
 
 <p>
   <img src="https://img.shields.io/badge/version-1.0.0.-blue.svg?cacheSeconds=2592000" />
-  <a href="https://www.coolflutter.com/">
+  <a>
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" target="_blank" />
   </a>
-  <a href="https://www.coolflutter.com/">
+  <a>
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" target="_blank" />
   </a>
   <a href="http://makeapullrequest.com">
     <img alt="PRs welcome: alianilkocak" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" target="_blank" />
   </a>
-  <a href="http://https://www.facebook.com/DiloHashRoX/">
+  <a href="https://www.facebook.com/DiloHashRoX/">
     <img alt="Facebook: Harshana Rathnayaka" src="https://img.shields.io/badge/Facebook-follow-blue?style=social" target="_blank" />
   </a>
 </p>
