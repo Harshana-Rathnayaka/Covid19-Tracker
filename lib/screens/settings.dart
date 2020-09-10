@@ -13,9 +13,13 @@ class _SettingsState extends State<Settings> {
   var selectedCountry;
   bool isLoading = false;
   var countryDialCode = '+94';
+  var width;
+  var height;
 
   @override
   Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.deepPurple[200],
@@ -35,8 +39,8 @@ class _SettingsState extends State<Settings> {
         body: isLoading
             ? Center(child: CircularProgressIndicator())
             : Container(
-                height: 300,
-                width: MediaQuery.of(context).size.width,
+                height: height / 2,
+                width: width,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: Column(
