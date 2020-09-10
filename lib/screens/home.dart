@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:covid19_tracker/screens/settings.dart';
 import 'package:covid19_tracker/services/country.dart';
 import 'package:covid19_tracker/services/network_helper.dart';
@@ -34,6 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
   var isConnectedUs = false;
   var country;
   var selectedState = 'Alabama';
+  var width;
+  var height;
 
   Future _getSpecificUsState(endpoint) async {
     print('sending api request to get data');
@@ -184,6 +185,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
@@ -324,7 +327,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                   child: RefreshProgressIndicator())
                               : Container(
-                                  height: MediaQuery.of(context).size.height,
+                                  width: width,
+                                  height: height,
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                       0.0,
@@ -1114,8 +1118,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                       child: RefreshProgressIndicator())
                                   : Container(
-                                      height:
-                                          MediaQuery.of(context).size.height,
+                                      width: width,
+                                      height: height,
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                           0.0,
@@ -2003,7 +2007,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                   child: RefreshProgressIndicator())
                               : Container(
-                                  height: MediaQuery.of(context).size.height,
+                                  width: width,
+                                  height: height,
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                       0.0,
