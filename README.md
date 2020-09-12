@@ -12,10 +12,12 @@
     <img alt="PRs welcome: alianilkocak" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" target="_blank" />
   </a>
   <a href="https://linkedin.com/in/harshana-rathnayaka">
-  <img alt="LinkedIn" src="https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555" />
+  <img alt="LinkedIn" src="https://img.shields.io/badge/-LinkedIn-black.svg?&logo=linkedin&colorB=555" />
+  </a>
 </p>
 
 Star ⭐ the repo if you like what you see. 😉
+
   <img href="https://facebook.com/DiloHashRoX" src="https://img.shields.io/badge/facebook-%231877F2.svg?&style=for-the-badge&logo=facebook&logoColor=white">
 
 <img alt="Poster" src="assets/images/poster.jpg" />
