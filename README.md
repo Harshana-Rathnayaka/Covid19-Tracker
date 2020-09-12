@@ -22,6 +22,8 @@ Star ⭐ the repo if you like what you see. 😉
 
 <img alt="Poster" src="assets/images/poster.jpg" />
 
+> ***A Covid-19 Tracker made with Flutter to keep you updated on the current situation around the world***
+
 ## ✨ Requirements
 * Any Operating System (ie. MacOS X, Linux, Windows)
 * Any IDE with Flutter SDK installed (ie. IntelliJ, Android Studio, VSCode etc.)
