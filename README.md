@@ -24,6 +24,11 @@
 
 ---
 
+## 👷‍♂️ Built With
+
+* [Flutter](https://flutter.dev)
+* [NOVEL CoVID19 API](https://disease.sh/)
+
 ## ✨ Requirements
 * Any Operating System (ie. MacOS X, Linux, Windows)
 * Any IDE with Flutter SDK installed (ie. IntelliJ, Android Studio, VSCode etc.)
@@ -63,3 +68,10 @@ $ flutter run
 ## 🤝 Contributing
 
 **Contributions, issues and feature requests are welcome** !<br />Feel free to check out the [issues page](https://www.coolflutter.com/).
+
+## 📝 License
+
+<img alt="License: MIT" href="http://badges.mit-license.org" src="https://img.shields.io/badge/License-MIT-yellow.svg" target="_blank" />
+
+- **[MIT license](http://opensource.org/licenses/mit-license.php)**
+- Copyright 2020 © <a href="http://fb.com/DreekoCorporations" target="_blank">Dreeko Coporations</a>.
