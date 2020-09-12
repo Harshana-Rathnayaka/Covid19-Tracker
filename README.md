@@ -65,7 +65,7 @@ $ flutter run
 
 ## 🤝 Contributing
 
-**Contributions, issues and feature requests are welcome** !<br />Feel free to check out the [issues page](https://www.coolflutter.com/).
+**Contributions, issues and feature requests are welcome** !<br />Feel free to check out the [issues page]().
 
 ## 📝 License
 
