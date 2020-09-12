@@ -1,6 +1,6 @@
 <h1 align="center">Welcome to Flutter Covid-19 Tracker 👋</h1>
 
-<p>
+<p align="center">
   <img src="https://img.shields.io/badge/version-1.0.0.-blue.svg?cacheSeconds=2592000" />
   <a>
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" target="_blank" />
@@ -11,18 +11,19 @@
   <a href="http://makeapullrequest.com">
     <img alt="PRs welcome: alianilkocak" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" target="_blank" />
   </a>
-  <img href="https://facebook.com/DiloHashRoX" src="https://img.shields.io/badge/facebook-%231877F2.svg?&style=for-the-badge&logo=facebook&logoColor=white">
+  <a href="https://linkedin.com/in/harshana-rathnayaka">
+  <img alt="LinkedIn" src="https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555" />
 </p>
 
-
 Star ⭐ the repo if you like what you see. 😉
+  <img href="https://facebook.com/DiloHashRoX" src="https://img.shields.io/badge/facebook-%231877F2.svg?&style=for-the-badge&logo=facebook&logoColor=white">
+
+<img alt="Poster" src="assets/images/poster.jpg" />
 
 ## ✨ Requirements
 * Any Operating System (ie. MacOS X, Linux, Windows)
 * Any IDE with Flutter SDK installed (ie. IntelliJ, Android Studio, VSCode etc.)
 * A little knowledge of Dart and Flutter
-
-<img alt="Poster" src="assets/images/poster.jpg" />
 
 
 ## Getting Started
