@@ -29,6 +29,41 @@ Star ⭐ the repo if you like what you see. 😉
 * Any IDE with Flutter SDK installed (ie. IntelliJ, Android Studio, VSCode etc.)
 * A little knowledge of Dart and Flutter
 
+## ✨ Installation
+
+- Follow the below steps to get up and running
+- Run the following `commands` inside Visual Studio Code or any other IDE which has a terminal or you can just use `cmd`
+
+> Clone
+
+- Clone this repo to your local machine using `https://github.com/Harshana-Rathnayaka/Covid19-Tracker`
+
+```shell
+$ git clone https://github.com/Harshana-Rathnayaka/Covid19-Tracker
+```
+
+> Run and test the application
+- Run the following commands to run and test the application in an emulator or a real device
+```dart
+$ flutter pub get
+$ flutter run
+```
+
+## ✨ Screenshots
+
+<img src="assets/images/1.png" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/images/2.png" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="assets/images/3.png" width="220"> </br> </br> </br>
+<img src="assets/images/4.png" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="assets/images/5.png" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="assets/images/6.png" width="220"></br> </br> </br>
+<img src="assets/images/7.png" width="220">
+<!-- <img alt="Poster" src="assets/images/1.png" />
+<img alt="Poster" src="assets/images/2.png" />
+<img alt="Poster" src="assets/images/3.png" />
+<img alt="Poster" src="assets/images/4.png" />
+<img alt="Poster" src="assets/images/5.png" />
+<img alt="Poster" src="assets/images/6.png" />
+<img alt="Poster" src="assets/images/7.png" /> -->
+
+
+
 
 ## Getting Started
 
