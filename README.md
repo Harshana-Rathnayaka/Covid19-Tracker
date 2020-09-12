@@ -11,13 +11,19 @@
   <a href="http://makeapullrequest.com">
     <img alt="PRs welcome: alianilkocak" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" target="_blank" />
   </a>
-  <a href="https://www.facebook.com/DiloHashRoX/">
-    <img alt="Facebook: Harshana Rathnayaka" src="https://img.shields.io/badge/Facebook-follow-blue?style=social" target="_blank" />
-  </a>
+  <img href="https://facebook.com/DiloHashRoX" src="https://img.shields.io/badge/facebook-%231877F2.svg?&style=for-the-badge&logo=facebook&logoColor=white">
 </p>
 
 
 Star ⭐ the repo if you like what you see. 😉
+
+## ✨ Requirements
+* Any Operating System (ie. MacOS X, Linux, Windows)
+* Any IDE with Flutter SDK installed (ie. IntelliJ, Android Studio, VSCode etc.)
+* A little knowledge of Dart and Flutter
+
+<img alt="Poster" src="assets/images/poster.jpg" />
+
 
 ## Getting Started
 
