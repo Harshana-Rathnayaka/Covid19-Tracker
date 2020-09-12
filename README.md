@@ -72,4 +72,4 @@ $ flutter run
 <img alt="License: MIT" href="http://badges.mit-license.org" src="https://img.shields.io/badge/License-MIT-yellow.svg" target="_blank" />
 
 - **[MIT license](http://opensource.org/licenses/mit-license.php)**
-- Copyright 2020 © <a href="http://fb.com/DreekoCorporations" target="_blank">Dreeko Coporations</a>.
+- Copyright 2020 © <a href="http://fb.com/DreekoCorporations" target="_blank">Dreeko Corporations</a>.
