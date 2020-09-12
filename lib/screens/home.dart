@@ -1154,11 +1154,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                         : Container(
                                                             height: 50.0,
                                                             width: 40.0,
-                                                            child: (countryData[
-                                                                            'countryInfo']
-                                                                        [
-                                                                        'flag'] !=
-                                                                    null)
+                                                            child: (countryData !=
+                                                                        null)
                                                                 ? Image.network(
                                                                     countryData[
                                                                             'countryInfo']
