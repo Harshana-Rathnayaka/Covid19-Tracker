@@ -22,8 +22,6 @@
 
 > ***A Covid-19 Tracker made with Flutter to keep you updated on the current situation around the world***
 
----
-
 ## 👷‍♂️ Built With
 
 * [Flutter](https://flutter.dev)
