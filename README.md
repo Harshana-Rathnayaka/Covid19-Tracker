@@ -16,7 +16,7 @@
   </a>
 </p>
 
-Star ⭐ the repo if you like what you see. 😉
+***Star ⭐ the repo if you like what you see. 😉***
 
   <img href="https://facebook.com/DiloHashRoX" src="https://img.shields.io/badge/facebook-%231877F2.svg?&style=for-the-badge&logo=facebook&logoColor=white">
 
@@ -34,7 +34,7 @@ Star ⭐ the repo if you like what you see. 😉
 - Follow the below steps to get up and running
 - Run the following `commands` inside Visual Studio Code or any other IDE which has a terminal or you can just use `cmd`
 
-> Clone
+> Clone the repository
 
 - Clone this repo to your local machine using `https://github.com/Harshana-Rathnayaka/Covid19-Tracker`
 
@@ -53,7 +53,7 @@ $ flutter run
 
 <img src="assets/images/1.png" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/images/2.png" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="assets/images/3.png" width="220"> </br> </br> </br>
 <img src="assets/images/4.png" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="assets/images/5.png" width="220">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="assets/images/6.png" width="220"></br> </br> </br>
-<img src="assets/images/7.png" width="220">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="assets/images/7.png" width="220">
 <!-- <img alt="Poster" src="assets/images/1.png" />
 <img alt="Poster" src="assets/images/2.png" />
 <img alt="Poster" src="assets/images/3.png" />
