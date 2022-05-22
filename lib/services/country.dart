@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CountryNotifier extends ChangeNotifier {
@@ -15,7 +16,6 @@ class CountryNotifier extends ChangeNotifier {
   CountryNotifier() {
     // default values
     _countryDialCode = '+94';
-
     _loadFromPrefs();
   }
 
@@ -23,10 +23,6 @@ class CountryNotifier extends ChangeNotifier {
   bool saveCountry(country, countryDialCode) {
     _country = country;
     _countryDialCode = countryDialCode;
-    print('===============');
-    print('saving to shared preferences');
-    print(_country);
-    print(_countryDialCode);
     try {
       _saveToPrefs();
       notifyListeners();
