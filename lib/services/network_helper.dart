@@ -7,7 +7,7 @@ class Network {
   getData(endpoint) async {
     var fullUrl = url + endpoint;
 
-    return await http.get(fullUrl);
+    return await http.get(Uri.parse(fullUrl));
   }
 
   checkInternetConnection() async {
@@ -15,8 +15,7 @@ class Network {
 
     if (connectivityResult == ConnectivityResult.none) {
       return false;
-    } else if (connectivityResult == ConnectivityResult.wifi ||
-        connectivityResult == ConnectivityResult.mobile) {
+    } else if (connectivityResult == ConnectivityResult.wifi || connectivityResult == ConnectivityResult.mobile) {
       return true;
     }
   }

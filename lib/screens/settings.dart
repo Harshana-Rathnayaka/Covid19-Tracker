@@ -27,14 +27,7 @@ class _SettingsState extends State<Settings> {
           backgroundColor: Colors.deepPurple,
           centerTitle: true,
           elevation: 10,
-          title: Text(
-            "Settings",
-            style: TextStyle(
-              letterSpacing: 2,
-              fontWeight: FontWeight.bold,
-              fontSize: 22.0,
-            ),
-          ),
+          title: Text("Settings", style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.bold, fontSize: 22.0)),
         ),
         body: isLoading
             ? Center(child: CircularProgressIndicator())
@@ -56,10 +49,7 @@ class _SettingsState extends State<Settings> {
                       ),
                       Consumer<CountryNotifier>(
                         builder: (context, notifier, child) => CountryListPick(
-                          isDownIcon: true,
-                          isShowFlag: true,
-                          showEnglishName: true,
-                          isShowTitle: true,
+                          theme: CountryTheme(isDownIcon: false, isShowFlag: true, showEnglishName: true, isShowTitle: true),
                           initialSelection: notifier.countryDialCode,
                           onChanged: (CountryCode code) {
                             print(code.dialCode);
@@ -78,20 +68,14 @@ class _SettingsState extends State<Settings> {
                               isLoading = true;
                             });
                             Future.delayed(Duration(seconds: 1), () {
-                              final countrySaved = notifier.saveCountry(
-                                  selectedCountry, countryDialCode);
+                              final countrySaved = notifier.saveCountry(selectedCountry, countryDialCode);
                               if (countrySaved) {
                                 setState(() {
                                   isLoading = false;
                                 });
-                                Fluttertoast.showToast(
-                                    backgroundColor: Colors.green,
-                                    msg:
-                                        '$selectedCountry was saved as your country');
+                                Fluttertoast.showToast(backgroundColor: Colors.green, msg: '$selectedCountry was saved as your country');
                               } else {
-                                Fluttertoast.showToast(
-                                    backgroundColor: Colors.redAccent,
-                                    msg: 'something went wrong');
+                                Fluttertoast.showToast(backgroundColor: Colors.redAccent, msg: 'something went wrong');
                                 print('something went wrong');
                               }
                             });
