@@ -14,15 +14,13 @@ class CountryNotifier extends ChangeNotifier {
   String get countryDialCode => _countryDialCode;
 
   CountryNotifier() {
-    // default values
-    _countryDialCode = '+94';
-    _loadFromPrefs();
+    _loadFromPrefs(); // default values
   }
 
   // function to save the country
   bool saveCountry(country, countryDialCode) {
-    _country = country;
-    _countryDialCode = countryDialCode;
+    _country = country ?? 'Sri Lanka';
+    _countryDialCode = countryDialCode ?? '+94';
     try {
       _saveToPrefs();
       notifyListeners();
@@ -45,7 +43,7 @@ class CountryNotifier extends ChangeNotifier {
   _loadFromPrefs() async {
     await _initPrefs();
     _country = _sharedPreferences.getString(countryKey);
-    _countryDialCode = _sharedPreferences.getString(countryCodeKey) ?? '+94';
+    _countryDialCode = _sharedPreferences.getString(countryCodeKey);
 
     notifyListeners();
   }
