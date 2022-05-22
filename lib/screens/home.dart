@@ -247,8 +247,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Padding(
-                                            padding: const EdgeInsets.only(top: 10.0, right: 58.0),
-                                            child: countryData != null ? Container(height: 50.0, width: 40.0, child: Image.network(countryData['countryInfo']['flag'])) : Container(),
+                                            padding: const EdgeInsets.only(top: 10.0, right: 50.0),
+                                            child: countryData != null ? Container(height: 38.0, width: 40.0, child: Image.network(countryData['countryInfo']['flag'])) : Container(),
                                           ),
                                           Consumer<CountryNotifier>(
                                             builder: (context, notifier, child) => DropdownButton<String>(
