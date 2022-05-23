@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 import '../helper_methods.dart';
 
 class InfoCard extends StatelessWidget {
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final Color headingColor;
   final Color bodyText1Color;
   final Color bodyText2Color;
   final String heading;
   final bodyText1;
-  final int bodyText2;
+  final int? bodyText2;
 
   const InfoCard({
-    Key key,
+    Key? key,
     this.backgroundColor = Colors.white,
     this.headingColor = Colors.white,
     this.bodyText1Color = Colors.white,
     this.bodyText2Color = Colors.grey,
-    @required this.heading,
-    @required this.bodyText1,
+    required this.heading,
+    required this.bodyText1,
     this.bodyText2,
   }) : super(key: key);
 

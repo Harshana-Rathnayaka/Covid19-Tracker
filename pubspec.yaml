@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -64,11 +64,7 @@ flutter:
   fonts:
     - family: Montserrat
       fonts:
-        # - asset: assets/fonts/Montserrat-Regular.ttf
         - asset: assets/fonts/Montserrat-SemiBold.ttf
-          # - asset: assets/fonts/Montserrat-Medium.ttf
-          # - asset: assets/fonts/Montserrat-Bold.ttf
-          # - asset: assets/fonts/Montserrat-Black.ttf
           # weight: 500
   #         style: italic
   #   - family: Trajan Pro

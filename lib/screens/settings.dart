@@ -4,7 +4,7 @@ import 'package:country_list_pick/country_list_pick.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
-import '../services/country.dart';
+import '../services/country_service.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -13,9 +13,9 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   bool _isLoading = false;
-  String selectedCountryName;
-  String selectedCountryDialCode;
-  Size size;
+  String? selectedCountryName;
+  String? selectedCountryDialCode;
+  late Size size;
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +45,9 @@ class _SettingsState extends State<Settings> {
                     CountryListPick(
                       theme: CountryTheme(isDownIcon: false, isShowFlag: true, showEnglishName: true, isShowTitle: true),
                       initialSelection: countryNotifier.countryDialCode ?? '+94',
-                      onChanged: (CountryCode code) {
+                      onChanged: (CountryCode? code) {
                         setState(() {
-                          selectedCountryName = code.name;
+                          selectedCountryName = code!.name;
                           selectedCountryDialCode = code.dialCode;
                         });
                       },
