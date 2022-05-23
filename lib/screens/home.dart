@@ -13,8 +13,9 @@ import '../services/country.dart';
 import '../services/network_helper.dart';
 import '../utils/constants.dart';
 import '../utils/helper_methods.dart';
-import '../utils/widgets/BottomContainer.dart';
-import '../utils/widgets/InfoCard.dart';
+import '../utils/widgets/bottom_container.dart';
+import '../utils/widgets/custom_dropdown_button.dart';
+import '../utils/widgets/info_card.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -102,16 +103,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
-                                      lastUpdatedTime(globalData.updated),
-                                      DropdownButton<String>(
-                                        value: selectedDropdownValue,
-                                        icon: Icon(Icons.arrow_drop_down, color: Colors.purpleAccent),
-                                        iconSize: 28,
-                                        elevation: 16,
-                                        underline: Container(height: 2.0, color: Colors.purpleAccent),
-                                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                                        items: days.map<DropdownMenuItem<String>>((value) => DropdownMenuItem<String>(child: Text(value), value: value)).toList(),
-                                        onChanged: (value) {
+                                      _lastUpdatedTime(globalData.updated),
+                                      CustomDropdownButton(
+                                        dropdownValue: selectedDropdownValue,
+                                        items: days,
+                                        onChanged: (String value) {
                                           setState(() {
                                             selectedDropdownValue = value;
                                             if (connectionStatus != ConnectivityStatus.Offline) {
@@ -210,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
-                                      lastUpdatedTime(countryData.updated),
+                                      _lastUpdatedTime(countryData.updated),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -218,27 +214,19 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                             padding: const EdgeInsets.only(top: 10.0, right: 50.0),
                                             child: countryData != null ? Container(height: 38.0, width: 40.0, child: Image.network(countryData.countryInfo.flag)) : Container(),
                                           ),
-                                          Consumer<CountryNotifier>(
-                                            builder: (context, notifier, child) => DropdownButton<String>(
-                                              value: selectedDropdownValue,
-                                              icon: Icon(Icons.arrow_drop_down, color: Colors.purpleAccent),
-                                              iconSize: 28,
-                                              elevation: 16,
-                                              underline: Container(height: 2.0, color: Colors.purpleAccent),
-                                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                                              items: days.map<DropdownMenuItem<String>>((value) => DropdownMenuItem<String>(child: Text(value), value: value)).toList(),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  selectedDropdownValue = value;
-
-                                                  if (connectionStatus != ConnectivityStatus.Offline) {
-                                                    _getCountryData(notifier.country, selectedDropdownValue);
-                                                  } else {
-                                                    showToast('No internet connection.');
-                                                  }
-                                                });
-                                              },
-                                            ),
+                                          CustomDropdownButton(
+                                            dropdownValue: selectedDropdownValue,
+                                            items: days,
+                                            onChanged: (String value) {
+                                              setState(() {
+                                                selectedDropdownValue = value;
+                                                if (connectionStatus != ConnectivityStatus.Offline) {
+                                                  _getCountryData(notifier.country, selectedDropdownValue);
+                                                } else {
+                                                  showToast('No internet connection.');
+                                                }
+                                              });
+                                            },
                                           ),
                                         ],
                                       ),
@@ -331,22 +319,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
-                                      lastUpdatedTime(usStateData.updated),
+                                      _lastUpdatedTime(usStateData.updated),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          DropdownButton<String>(
-                                            value: selectedState,
-                                            icon: Icon(Icons.arrow_drop_down, color: Colors.purpleAccent),
-                                            iconSize: 28,
-                                            elevation: 16,
-                                            underline: Container(height: 2.0, color: Colors.purpleAccent),
-                                            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                                            items: states.map<DropdownMenuItem<String>>((value) => DropdownMenuItem<String>(child: Text(value), value: value)).toList(),
-                                            onChanged: (value) {
+                                          CustomDropdownButton(
+                                            dropdownValue: selectedState,
+                                            items: states,
+                                            onChanged: (String value) {
                                               setState(() {
                                                 selectedState = value;
-
                                                 if (connectionStatus != ConnectivityStatus.Offline) {
                                                   _getUsaData(selectedDropdownValue);
                                                 } else {
@@ -356,18 +338,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                             },
                                           ),
                                           SizedBox(width: 40.0),
-                                          DropdownButton<String>(
-                                            value: selectedDropdownValue,
-                                            icon: Icon(Icons.arrow_drop_down, color: Colors.purpleAccent),
-                                            iconSize: 28,
-                                            elevation: 16,
-                                            underline: Container(height: 2.0, color: Colors.purpleAccent),
-                                            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                                            items: days.map<DropdownMenuItem<String>>((value) => DropdownMenuItem<String>(child: Text(value), value: value)).toList(),
-                                            onChanged: (value) {
+                                          CustomDropdownButton(
+                                            dropdownValue: selectedDropdownValue,
+                                            items: days,
+                                            onChanged: (String value) {
                                               setState(() {
                                                 selectedDropdownValue = value;
-
                                                 if (connectionStatus != ConnectivityStatus.Offline) {
                                                   _getUsaData(selectedDropdownValue);
                                                 } else {
@@ -450,12 +426,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-// last updated time
-  Text lastUpdatedTime(time) => Text(
-        "Last Updated: ${DateFormat('yyyy-MM-dd  kk:mm').format(DateTime.fromMillisecondsSinceEpoch(time)).toString()}",
-        style: TextStyle(color: Colors.grey[500]),
-      );
-
 // get global data
   Future _getGlobalData([dropDownValue]) async {
     String endpoint = '/all';
@@ -527,4 +497,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       showToast('No internet connection.');
     }
   }
+
+  // last updated time
+  Text _lastUpdatedTime(time) => Text(
+        "Last Updated: ${DateFormat('yyyy-MM-dd  kk:mm').format(DateTime.fromMillisecondsSinceEpoch(time)).toString()}",
+        style: TextStyle(color: Colors.grey[500]),
+      );
 }
