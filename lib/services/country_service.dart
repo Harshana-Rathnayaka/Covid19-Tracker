@@ -3,15 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CountryNotifier extends ChangeNotifier {
-  SharedPreferences _sharedPreferences;
+  SharedPreferences? _sharedPreferences;
   final String countryKey = "country";
   final String countryCodeKey = "countryDialCode";
-  String _country;
-  String _countryDialCode;
+  String? _country;
+  String? _countryDialCode;
 
 // getters
-  String get country => _country;
-  String get countryDialCode => _countryDialCode;
+  String? get country => _country;
+  String? get countryDialCode => _countryDialCode;
 
   CountryNotifier() {
     _loadFromPrefs(); // default values
@@ -42,8 +42,8 @@ class CountryNotifier extends ChangeNotifier {
   // loading saved preferences
   _loadFromPrefs() async {
     await _initPrefs();
-    _country = _sharedPreferences.getString(countryKey);
-    _countryDialCode = _sharedPreferences.getString(countryCodeKey);
+    _country = _sharedPreferences!.getString(countryKey);
+    _countryDialCode = _sharedPreferences!.getString(countryCodeKey);
 
     notifyListeners();
   }
@@ -51,7 +51,7 @@ class CountryNotifier extends ChangeNotifier {
   // saving to preferences
   _saveToPrefs() async {
     await _initPrefs();
-    _sharedPreferences.setString(countryKey, _country);
-    _sharedPreferences.setString(countryCodeKey, _countryDialCode);
+    _sharedPreferences!.setString(countryKey, _country!);
+    _sharedPreferences!.setString(countryCodeKey, _countryDialCode!);
   }
 }
