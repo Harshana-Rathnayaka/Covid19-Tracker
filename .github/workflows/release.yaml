@@ -1,0 +1,110 @@
+name: Analyze, Build and Release to GitHub
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  # creating the version number for both GitHub and Pubspec file
+  version:
+    name: Create version number
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch all history for all tags and branches
+        run: |
+          git config remote.origin.url https://x-access-token:${{ secrets.TOKEN }}@github.com/${{ github.repository }}
+          git fetch --prune --depth=10000
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: "5.x"
+
+      - name: Use GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+
+      - name: Create version.txt with nuGetVersion
+        run: echo ${{ steps.gitversion.outputs.nuGetVersion  }} > version.txt
+
+      - name: Upload version.txt
+        uses: actions/upload-artifact@v2
+        with:
+          name: gitversion
+          path: version.txt
+
+  # building the appbundle after updating the version in Pubspec file from the version number created before
+  build:
+    name: Analyze and build APKs and Appbundle (Android)
+    needs: [version]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # version text created earlier
+      - name: Get version.txt
+        uses: actions/download-artifact@v2
+        with:
+          name: gitversion
+
+      - name: Create new file without newline char from version.txt
+        run: tr -d '\n' < version.txt > version1.txt
+
+      - name: Read version
+        id: version
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: version1.txt
+
+      # updating that version in pubspec
+      - name: Update version in YAML
+        run: sed -i 's/99.99.99+99/${{ steps.version.outputs.content }}+${{ github.run_number }}/g' pubspec.yaml
+
+      # setting up environment for build
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "2.10.x"
+          channel: "stable"
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.FLUTTER_HOME }}/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
+
+      - name: Download pub dependencies
+        run: flutter pub get
+
+      - name: Run analyzer
+        run: flutter analyze
+
+      # building appbundle and APKs
+      - name: Build Android Appbundle
+        run: flutter build appbundle
+
+      - name: Build APKs for each abi
+        run: flutter build apk --split-per-abi --release
+
+      - name: Build Fat APK
+        run: flutter build apk --release
+
+      # release and upload to github
+      - name: Create a Release in GitHub
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/app-release.aab"
+          token: ${{ secrets.TOKEN }}
+          commit: ${{ github.sha }}
