@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../enums/connectivity_status.dart';
+import '../models/country.dart';
+import '../models/global.dart';
+import '../models/state.dart';
 import '../screens/settings.dart';
 import '../services/country.dart';
 import '../services/network_helper.dart';
@@ -22,7 +23,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   bool _isLoading = false;
-  Map<String, dynamic> globalData, countryData, usStateData;
+  Global globalData;
+  Country countryData;
+  States usStateData;
   List days = ['Today', 'Yesterday', 'Two Days Ago'];
   String selectedDropdownValue = 'Today';
   String selectedState = 'Alabama';
@@ -82,17 +85,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                 tooltip: 'Reload',
                 child: Icon(Icons.refresh),
                 onPressed: () {
-                  if (connectionStatus != ConnectivityStatus.Offline) {
-                    if (DefaultTabController.of(context).index == 0) {
-                      _getGlobalData(selectedDropdownValue);
-                    } else if (DefaultTabController.of(context).index == 1) {
-                      _getCountryData(notifier.country, selectedDropdownValue);
-                    } else if (DefaultTabController.of(context).index == 2) {
-                      _getUsaData(selectedDropdownValue);
-                    }
-                  } else {
-                    showToast('No internet connection.');
-                  }
+                  _handleFloatingBtn(context, connectionStatus, notifier);
                 },
               ),
             ),
@@ -109,8 +102,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
-                                      Text("Last Updated: ${DateFormat('yyyy-MM-dd  kk:mm').format(DateTime.fromMillisecondsSinceEpoch(globalData['updated'])).toString()}",
-                                          style: TextStyle(color: Colors.grey[500])),
+                                      lastUpdatedTime(globalData.updated),
                                       DropdownButton<String>(
                                         value: selectedDropdownValue,
                                         icon: Icon(Icons.arrow_drop_down, color: Colors.purpleAccent),
@@ -137,22 +129,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                           children: [
                                             InfoCard(
                                               heading: 'Infected',
-                                              bodyText1: globalData['cases'],
-                                              bodyText2: globalData['todayCases'],
+                                              bodyText1: globalData.cases,
+                                              bodyText2: globalData.todayCases,
                                               headingColor: Colors.blue,
                                               bodyText1Color: Colors.black,
                                             ),
                                             InfoCard(
                                               heading: 'Deaths',
-                                              bodyText1: globalData['deaths'],
-                                              bodyText2: globalData['todayDeaths'],
+                                              bodyText1: globalData.deaths,
+                                              bodyText2: globalData.todayDeaths,
                                               headingColor: Colors.red,
                                               bodyText1Color: Colors.black,
                                             ),
                                             InfoCard(
                                               heading: 'Recovered',
-                                              bodyText1: globalData['recovered'],
-                                              bodyText2: globalData['todayRecovered'],
+                                              bodyText1: globalData.recovered,
+                                              bodyText2: globalData.todayRecovered,
                                               headingColor: Colors.green,
                                               bodyText1Color: Colors.black,
                                             ),
@@ -164,8 +156,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            InfoCard(heading: 'Active', bodyText1: globalData['active'], backgroundColor: Colors.green[400]),
-                                            InfoCard(heading: 'Critical', bodyText1: globalData['critical'], backgroundColor: Colors.redAccent[100]),
+                                            InfoCard(heading: 'Active', bodyText1: globalData.active, backgroundColor: Colors.green[400]),
+                                            InfoCard(heading: 'Critical', bodyText1: globalData.critical, backgroundColor: Colors.redAccent[100]),
                                           ],
                                         ),
                                       ),
@@ -174,9 +166,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            InfoCard(heading: 'Population', bodyText1: globalData['population'], backgroundColor: Colors.blueGrey),
-                                            InfoCard(heading: 'Countries', bodyText1: globalData['affectedCountries'], backgroundColor: Colors.blueGrey),
-                                            InfoCard(heading: 'Tests', bodyText1: globalData['tests'], backgroundColor: Colors.blueGrey),
+                                            InfoCard(heading: 'Population', bodyText1: globalData.population, backgroundColor: Colors.blueGrey),
+                                            InfoCard(heading: 'Countries', bodyText1: globalData.affectedCountries, backgroundColor: Colors.blueGrey),
+                                            InfoCard(heading: 'Tests', bodyText1: globalData.tests, backgroundColor: Colors.blueGrey),
                                           ],
                                         ),
                                       ),
@@ -187,42 +179,15 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                           columnWidths: {0: FractionColumnWidth(0.7), 1: FractionColumnWidth(0.3)},
                                           children: [
-                                            TableRow(children: [
-                                              Text("Cases Per One Million"),
-                                              Text(": ${numberFormat.format(globalData['casesPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Deaths Per One Million"),
-                                              Text(": ${numberFormat.format(globalData['deathsPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Tests Per One Million"),
-                                              Text(": ${numberFormat.format(globalData['testsPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("One Case Per People"),
-                                              Text(": ${globalData['oneCasePerPeople'].toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("One Death Per People"),
-                                              Text(": ${globalData['oneDeathPerPeople'].toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("One Test Per People"),
-                                              Text(": ${globalData['oneTestPerPeople'].toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Active Per One Million"),
-                                              Text(": ${numberFormat.format(globalData['activePerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Recovered Per One Million"),
-                                              Text(": ${numberFormat.format(globalData['recoveredPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Critical Per One Million"),
-                                              Text(": ${numberFormat.format(globalData['criticalPerOneMillion']).toString()}"),
-                                            ]),
+                                            TableRow(children: [Text("Cases Per One Million"), Text(": ${numberFormat.format(globalData.casesPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Deaths Per One Million"), Text(": ${numberFormat.format(globalData.deathsPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Tests Per One Million"), Text(": ${numberFormat.format(globalData.testsPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("One Case Per People"), Text(": ${globalData.oneCasePerPeople.toString()}")]),
+                                            TableRow(children: [Text("One Death Per People"), Text(": ${globalData.oneDeathPerPeople.toString()}")]),
+                                            TableRow(children: [Text("One Test Per People"), Text(": ${globalData.oneTestPerPeople.toString()}")]),
+                                            TableRow(children: [Text("Active Per One Million"), Text(": ${numberFormat.format(globalData.activePerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Recovered Per One Million"), Text(": ${numberFormat.format(globalData.recoveredPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Critical Per One Million"), Text(": ${numberFormat.format(globalData.criticalPerOneMillion).toString()}")]),
                                           ],
                                         ),
                                       ),
@@ -245,16 +210,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
-                                      Text(
-                                        "Last Updated: ${DateFormat('yyyy-MM-dd  kk:mm').format(DateTime.fromMillisecondsSinceEpoch(countryData['updated'])).toString()}",
-                                        style: TextStyle(color: Colors.grey[500]),
-                                      ),
+                                      lastUpdatedTime(countryData.updated),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.only(top: 10.0, right: 50.0),
-                                            child: countryData != null ? Container(height: 38.0, width: 40.0, child: Image.network(countryData['countryInfo']['flag'])) : Container(),
+                                            child: countryData != null ? Container(height: 38.0, width: 40.0, child: Image.network(countryData.countryInfo.flag)) : Container(),
                                           ),
                                           Consumer<CountryNotifier>(
                                             builder: (context, notifier, child) => DropdownButton<String>(
@@ -287,22 +249,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                           children: [
                                             InfoCard(
                                               heading: 'Infected',
-                                              bodyText1: countryData['cases'],
-                                              bodyText2: countryData['todayCases'],
+                                              bodyText1: countryData.cases,
+                                              bodyText2: countryData.todayCases,
                                               headingColor: Colors.blue,
                                               bodyText1Color: Colors.black,
                                             ),
                                             InfoCard(
                                               heading: 'Deaths',
-                                              bodyText1: countryData['deaths'],
-                                              bodyText2: countryData['todayDeaths'],
+                                              bodyText1: countryData.deaths,
+                                              bodyText2: countryData.todayDeaths,
                                               headingColor: Colors.red,
                                               bodyText1Color: Colors.black,
                                             ),
                                             InfoCard(
                                               heading: 'Recovered',
-                                              bodyText1: countryData['recovered'],
-                                              bodyText2: countryData['todayRecovered'],
+                                              bodyText1: countryData.recovered,
+                                              bodyText2: countryData.todayRecovered,
                                               headingColor: Colors.green,
                                               bodyText1Color: Colors.black,
                                             ),
@@ -314,8 +276,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            InfoCard(heading: 'Active', bodyText1: countryData['active'], backgroundColor: Colors.green[400]),
-                                            InfoCard(heading: 'Critical', bodyText1: countryData['critical'], backgroundColor: Colors.redAccent[100]),
+                                            InfoCard(heading: 'Active', bodyText1: countryData.active, backgroundColor: Colors.green[400]),
+                                            InfoCard(heading: 'Critical', bodyText1: countryData.critical, backgroundColor: Colors.redAccent[100]),
                                           ],
                                         ),
                                       ),
@@ -324,9 +286,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            InfoCard(heading: 'Population', bodyText1: countryData['population'], backgroundColor: Colors.blueGrey),
-                                            InfoCard(heading: 'Continent', bodyText1: countryData['continent'], backgroundColor: Colors.blueGrey),
-                                            InfoCard(heading: 'Tests', bodyText1: countryData['tests'], backgroundColor: Colors.blueGrey),
+                                            InfoCard(heading: 'Population', bodyText1: countryData.population, backgroundColor: Colors.blueGrey),
+                                            InfoCard(heading: 'Continent', bodyText1: countryData.continent, backgroundColor: Colors.blueGrey),
+                                            InfoCard(heading: 'Tests', bodyText1: countryData.tests, backgroundColor: Colors.blueGrey),
                                           ],
                                         ),
                                       ),
@@ -337,42 +299,15 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                           columnWidths: {0: FractionColumnWidth(0.7), 1: FractionColumnWidth(0.3)},
                                           children: [
-                                            TableRow(children: [
-                                              Text("Cases Per One Million"),
-                                              Text(": ${numberFormat.format(countryData['casesPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Deaths Per One Million"),
-                                              Text(": ${numberFormat.format(countryData['deathsPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Tests Per One Million"),
-                                              Text(": ${numberFormat.format(countryData['testsPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("One Case Per People"),
-                                              Text(": ${countryData['oneCasePerPeople'].toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("One Death Per People"),
-                                              Text(": ${countryData['oneDeathPerPeople'].toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("One Test Per People"),
-                                              Text(": ${countryData['oneTestPerPeople'].toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Active Per One Million"),
-                                              Text(": ${numberFormat.format(countryData['activePerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Recovered Per One Million"),
-                                              Text(": ${numberFormat.format(countryData['recoveredPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Critical Per One Million"),
-                                              Text(": ${numberFormat.format(countryData['criticalPerOneMillion']).toString()}"),
-                                            ]),
+                                            TableRow(children: [Text("Cases Per One Million"), Text(": ${numberFormat.format(countryData.casesPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Deaths Per One Million"), Text(": ${numberFormat.format(countryData.deathsPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Tests Per One Million"), Text(": ${numberFormat.format(countryData.testsPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("One Case Per People"), Text(": ${countryData.oneCasePerPeople.toString()}")]),
+                                            TableRow(children: [Text("One Death Per People"), Text(": ${countryData.oneDeathPerPeople.toString()}")]),
+                                            TableRow(children: [Text("One Test Per People"), Text(": ${countryData.oneTestPerPeople.toString()}")]),
+                                            TableRow(children: [Text("Active Per One Million"), Text(": ${numberFormat.format(countryData.activePerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Recovered Per One Million"), Text(": ${numberFormat.format(countryData.recoveredPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Critical Per One Million"), Text(": ${numberFormat.format(countryData.criticalPerOneMillion).toString()}")]),
                                           ],
                                         ),
                                       ),
@@ -396,8 +331,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                 child: SingleChildScrollView(
                                   child: Column(
                                     children: [
-                                      Text("Last Updated: ${DateFormat('yyyy-MM-dd  kk:mm').format(DateTime.fromMillisecondsSinceEpoch(usStateData['updated'])).toString()}",
-                                          style: TextStyle(color: Colors.grey[500])),
+                                      lastUpdatedTime(usStateData.updated),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
@@ -451,22 +385,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                           children: [
                                             InfoCard(
                                               heading: 'Infected',
-                                              bodyText1: usStateData['cases'],
-                                              bodyText2: usStateData['todayCases'],
+                                              bodyText1: usStateData.cases,
+                                              bodyText2: usStateData.todayCases,
                                               headingColor: Colors.blue,
                                               bodyText1Color: Colors.black,
                                             ),
                                             InfoCard(
                                               heading: 'Deaths',
-                                              bodyText1: usStateData['deaths'],
-                                              bodyText2: usStateData['todayDeaths'],
+                                              bodyText1: usStateData.deaths,
+                                              bodyText2: usStateData.todayDeaths,
                                               headingColor: Colors.red,
                                               bodyText1Color: Colors.black,
                                             ),
                                             InfoCard(
                                               heading: 'Recovered',
-                                              bodyText1: usStateData['recovered'],
-                                              bodyText2: usStateData['todayRecovered'] ?? 0,
+                                              bodyText1: usStateData.recovered,
+                                              bodyText2: 0,
                                               headingColor: Colors.green,
                                               bodyText1Color: Colors.black,
                                             ),
@@ -477,9 +411,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         padding: const EdgeInsets.all(5.0),
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            InfoCard(heading: 'Active', bodyText1: usStateData['active'], backgroundColor: Colors.green[400]),
-                                          ],
+                                          children: [InfoCard(heading: 'Active', bodyText1: usStateData.active, backgroundColor: Colors.green[400])],
                                         ),
                                       ),
                                       Padding(
@@ -487,8 +419,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
-                                            InfoCard(heading: 'Population', bodyText1: usStateData['population'], backgroundColor: Colors.blueGrey),
-                                            InfoCard(heading: 'Tests', bodyText1: usStateData['tests'], backgroundColor: Colors.blueGrey),
+                                            InfoCard(heading: 'Population', bodyText1: usStateData.population, backgroundColor: Colors.blueGrey),
+                                            InfoCard(heading: 'Tests', bodyText1: usStateData.tests, backgroundColor: Colors.blueGrey),
                                           ],
                                         ),
                                       ),
@@ -499,18 +431,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                           columnWidths: {0: FractionColumnWidth(0.7), 1: FractionColumnWidth(0.3)},
                                           children: [
-                                            TableRow(children: [
-                                              Text("Cases Per One Million"),
-                                              Text(": ${numberFormat.format(usStateData['casesPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Deaths Per One Million"),
-                                              Text(": ${numberFormat.format(usStateData['deathsPerOneMillion']).toString()}"),
-                                            ]),
-                                            TableRow(children: [
-                                              Text("Tests Per One Million"),
-                                              Text(": ${numberFormat.format(usStateData['testsPerOneMillion']).toString()}"),
-                                            ]),
+                                            TableRow(children: [Text("Cases Per One Million"), Text(": ${numberFormat.format(usStateData.casesPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Deaths Per One Million"), Text(": ${numberFormat.format(usStateData.deathsPerOneMillion).toString()}")]),
+                                            TableRow(children: [Text("Tests Per One Million"), Text(": ${numberFormat.format(usStateData.testsPerOneMillion).toString()}")]),
                                           ],
                                         ),
                                       ),
@@ -526,6 +449,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
     );
   }
+
+// last updated time
+  Text lastUpdatedTime(time) => Text(
+        "Last Updated: ${DateFormat('yyyy-MM-dd  kk:mm').format(DateTime.fromMillisecondsSinceEpoch(time)).toString()}",
+        style: TextStyle(color: Colors.grey[500]),
+      );
 
 // get global data
   Future _getGlobalData([dropDownValue]) async {
@@ -545,7 +474,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     }
 
     Network().getData(endpoint).then((response) {
-      if (response != null && response.statusCode == 200) setState(() => globalData = jsonDecode(response.body));
+      if (response != null && response.statusCode == 200) setState(() => globalData = Global.fromRawJson(response.body));
     }, onError: (error) => showToast(error.message.toString()));
     setState(() => _isLoading = false);
   }
@@ -562,7 +491,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     if (dropDownValue != null && dropDownValue == 'Yesterday') endpoint = '/countries/$country?yesterday=true&strict=false';
 
     Network().getData(endpoint).then((response) {
-      if (response != null && response.statusCode == 200) setState(() => countryData = jsonDecode(response.body));
+      if (response != null && response.statusCode == 200) setState(() => countryData = Country.fromRawJson(response.body));
     }, onError: (error) => showToast(error.message.toString()));
     setState(() => _isLoading = false);
   }
@@ -579,8 +508,23 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     if (dropDownValue != null && dropDownValue == 'Yesterday') endpoint = '/states/$selectedState?yesterday=true';
 
     Network().getData(endpoint).then((response) {
-      if (response != null && response.statusCode == 200) setState(() => usStateData = jsonDecode(response.body));
+      if (response != null && response.statusCode == 200) setState(() => usStateData = States.fromRawJson(response.body));
     }, onError: (error) => showToast(error.message.toString()));
     setState(() => _isLoading = false);
+  }
+
+// floating action btn click
+  void _handleFloatingBtn(context, connectionStatus, notifier) {
+    if (connectionStatus != ConnectivityStatus.Offline) {
+      if (DefaultTabController.of(context).index == 0) {
+        _getGlobalData(selectedDropdownValue);
+      } else if (DefaultTabController.of(context).index == 1) {
+        _getCountryData(notifier.country, selectedDropdownValue);
+      } else if (DefaultTabController.of(context).index == 2) {
+        _getUsaData(selectedDropdownValue);
+      }
+    } else {
+      showToast('No internet connection.');
+    }
   }
 }
