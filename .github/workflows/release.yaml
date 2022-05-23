@@ -91,20 +91,14 @@ jobs:
       - name: Run analyzer
         run: flutter analyze
 
-      # building appbundle and APKs
-      - name: Build Android Appbundle
-        run: flutter build appbundle
-
-      - name: Build APKs for each abi
-        run: flutter build apk --split-per-abi --release
-
-      - name: Build Fat APK
+      # building the APK
+      - name: Build APK
         run: flutter build apk --release
 
       # release and upload to github
       - name: Create a Release in GitHub
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/app-release.aab"
+          artifacts: "build/app/outputs/apk/release/*.apk"
           token: ${{ secrets.TOKEN }}
           commit: ${{ github.sha }}
